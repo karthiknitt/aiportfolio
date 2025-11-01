@@ -1,44 +1,44 @@
 name: Code quality
 
 on:
-    push:
-    pull_request:
+  push:
+  pull_request:
 
 jobs:
-    quality:
-        name: Code quality
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v5
-              with:
-                  persist-credentials: false
+  quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "22"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
-            - name: Enable Corepack and setup pnpm
-              run: corepack enable && corepack prepare pnpm@latest --activate
+      - name: Enable Corepack and setup pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
 
-            - name: Setup pnpm cache
-              uses: actions/cache@v4
-              with:
-                  path: ~/.pnpm-store
-                  key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-            - name: Setup Biome
-              uses: biomejs/setup-biome@v2
-              with:
-                  version: latest
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: 2.3.0
 
-            - name: Run Biome
-              run: biome ci --css-parse-tailwind-directives=true .
+      - name: Run Biome
+        run: biome ci --css-parse-tailwind-directives=true .
