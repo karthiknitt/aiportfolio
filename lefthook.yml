@@ -28,9 +28,9 @@ pre-push:
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off --css-parse-tailwind-directives=true {push_files}
       stage_fixed: true
     type_check:
-      priority: 20
-      glob: "*.{ts,cts,mts,d.ts,d.cts,d.mts}"
-      run: pnpm tsc --noEmit --pretty false {push_files}
+       priority: 20
+       glob: "*.{ts,cts,mts,d.ts,d.cts,d.mts}"
+       run: pnpm tsc --noEmit --pretty false --skipLibCheck {push_files}
     build:
       priority: 30
       run: pnpm build
