@@ -1,9 +1,9 @@
 pre-commit:
   piped: true
   commands:
-    load_env:
-      priority: 10
-      run: pnpm dotenv -e .env.local && echo "Environment variables loaded"
+    #load_env:
+      #priority: 10
+     # run: pnpm dotenv -e .env.local
     format_lint:
       priority: 20
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
@@ -13,9 +13,11 @@ pre-commit:
       priority: 30
       glob: "*.{ts,cts,mts,d.ts,d.cts,d.mts}"
       run: pnpm tsc --noEmit --pretty false {staged_files}
+
+prepare-commit-msg:
+  commands:
     generate_commit_message:
-      priority: 40
-      run: aicommits --type conventional
+      run: npx dotenv -e .env.local -- node generate-commit-msg.js
 
 pre-push:
   piped: true
