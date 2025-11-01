@@ -1,23 +1,21 @@
 pre-commit:
   piped: true
   commands:
-    #load_env:
-      #priority: 10
-     # run: pnpm dotenv -e .env.local
+
     format_lint:
-      priority: 20
+      priority: 10
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off --css-parse-tailwind-directives=true {staged_files}
       stage_fixed: true
     type_check:
-      priority: 30
+      priority: 20
       glob: "*.{ts,cts,mts,d.ts,d.cts,d.mts}"
       run: pnpm tsc --noEmit --pretty false {staged_files}
 
 prepare-commit-msg:
   commands:
     generate_commit_message:
-      run: npx dotenv -e .env.local -- node generate-commit-msg.js
+      run: pnpm exec node generate-commit-msg.js {1}
 
 pre-push:
   piped: true

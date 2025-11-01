@@ -4,7 +4,10 @@ import { execSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
-import 'dotenv/config';
+import { config } from 'dotenv';
+
+// Load environment variables from .env.local
+config({ path: '.env.local' });
 
 if (!process.env.OPENAI_API_KEY) {
   console.error('Error: OPENAI_API_KEY environment variable is required');
@@ -13,7 +16,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 async function generateCommitMessage() {
   try {
-    // Get the commit message file path from arguments (passed by prepare-commit-msg hook)
+    // Get the commit message file path from arguments (passed by lefthook)
     const commitMsgFile = process.argv[2] || '.git/COMMIT_EDITMSG';
 
     // Get git diff, limited to prevent context window issues
@@ -48,8 +51,25 @@ ${diff}`;
     const commitMessage = text.trim();
     console.log(commitMessage);
 
-    // Write to the commit message file for VS Code to pick up
-    writeFileSync(commitMsgFile, commitMessage);
+    // Read existing commit message file content
+    let existingContent = '';
+    try {
+      existingContent = require('fs').readFileSync(commitMsgFile, 'utf8');
+    } catch (err) {
+      // File doesn't exist, that's fine
+    }
+
+    // Only write if the file is empty or contains default content
+    if (
+      !existingContent.trim() ||
+      existingContent.trim() ===
+        '# Please enter the commit message for your changes.'
+    ) {
+      // Write to the commit message file for VS Code to pick up
+      writeFileSync(commitMsgFile, commitMessage);
+    } else {
+      console.log('Commit message file already has content, skipping write');
+    }
   } catch (error) {
     console.error('Error generating commit message:', error.message);
     process.exit(1);
